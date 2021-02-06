@@ -1,4 +1,7 @@
 import logging
+import requests
+
+from fiab.settings import DISCORD_WEBHOOK
 
 class BaseLogger:
 
@@ -24,4 +27,11 @@ class BaseLogger:
         logging.critical(msg)
 
 
-DEFAULT_LOGGER = BaseLogger()
+class DiscordLogger(BaseLogger):
+
+    def info(self, msg: str):
+        requests.post(DISCORD_WEBHOOK, data={
+            'content': msg
+        })
+
+DEFAULT_LOGGER = DiscordLogger()
