@@ -153,7 +153,7 @@ class Well:
         return f'{ELASTIC_SEARCH_URL}/{doc_index}/{doc_type}/{doc_id}'
 
     def run(self) -> List[str]:
-        DEFAULT_LOGGER.info(f"Running {self.name}")
+        DEFAULT_LOGGER.info(f"Running {self.index} ({self.name})")
         urls = []
         schemas = self.drill()
         self.cache(schemas)
@@ -165,6 +165,8 @@ class Well:
         for schema in schemas:
             url = self.upload(schema)
             urls.append(url)
+    
+        DEFAULT_LOGGER.info(f'Uploaded {len(urls)} data points')
 
         return urls
 
