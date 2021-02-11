@@ -152,7 +152,7 @@ class YahooOptionsTickerWell(Well):
         options = soup.find('select', **{'class': 'Bd'}).children
         return map(lambda o: int(o.attrs['value']), options)
 
-    def drill(self):
+    def drill(self, gid):
         ticker_data = []
         for date in self.get_options_expiration_dates():
             table = self.process_yahoo_table(date)
@@ -164,6 +164,7 @@ class YahooOptionsTickerWell(Well):
             rows = map(lambda t: t[1], table.iterrows())
             ticker_data.extend(map(lambda row: YahooOptionsTickerSchema(
                 id=hruuid(),
+                gid=gid,
                 timestamp=load_time,
                 ticker=self.name,
                 expires=date,

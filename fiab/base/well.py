@@ -8,12 +8,14 @@ from dataclasses import dataclass
 import requests
 
 from fiab.util.logger import DEFAULT_LOGGER
+from fiab.util.hruuid import hruuid
 from fiab.settings import ELASTIC_SEARCH_URL
 
 @dataclass
 class BaseWellSchema:
     id: str
     timestamp: Optional[datetime]
+    gid: Optional[str]
 
     def json(self):
         data_contents = {}
@@ -114,7 +116,7 @@ class Well:
                 )
 
 
-    def drill(self) -> List[BaseWellSchema]:
+    def drill(self, gid) -> List[BaseWellSchema]:
         raise NotImplementedError()
 
     def cache(self, data: List[BaseWellSchema]):
@@ -155,7 +157,8 @@ class Well:
     def run(self) -> List[str]:
         DEFAULT_LOGGER.info(f"Running {self.index} ({self.name})")
         urls = []
-        schemas = self.drill()
+        gid = hruuid()
+        schemas = self.drill(gid)
         self.cache(schemas)
         DEFAULT_LOGGER.info(f"Using index: {self.index}")
         response = requests.put(f'{ELASTIC_SEARCH_URL}/{self.index}')
@@ -166,7 +169,9 @@ class Well:
             url = self.upload(schema)
             urls.append(url)
     
-        DEFAULT_LOGGER.info(f'Uploaded {len(urls)} data points')
+        DEFAULT_LOGGER.info(f'Uploaded {len(urls)} data points as {gid}')
+
+        self.meta = {'gid': gid}
 
         return urls
 

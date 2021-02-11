@@ -27,7 +27,7 @@ class RedditPostWell(Well):
     frequency = '0,5,10,15,20,25,30,35,40,45,50,55 * * * *'
     well_data_schema: RedditPostSchema
 
-    def drill(self):
+    def drill(self, gid):
         response = scraper.get(TARGET.format(subreddit=self.name))
         if not response.ok:
             raise RuntimeError(response.json())
@@ -37,6 +37,7 @@ class RedditPostWell(Well):
         messages = map(lambda child: child['data'], response.json()['data']['children'])
         parsed = map(lambda msg: RedditPostSchema(
             id=hruuid(),
+            gid=gid,
             timestamp=load_time,
             subreddit=self.name,
             author=msg['author'],

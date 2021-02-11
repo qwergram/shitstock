@@ -9,7 +9,6 @@ import time
 @dataclass
 class NyseWeeklyOptionsSchema(BaseWellSchema):
     ticker: str
-    group: str
 
 class NyseOptionsWeekliesWell(Well):
     name = 'NYSE Weekly Options List'
@@ -31,14 +30,12 @@ class NyseOptionsWeekliesWell(Well):
             'company': next(split_by_column)
         })
 
-    def drill(self):
-        run_id = hruuid()
+    def drill(self, gid):
         table = self.pull_table()
         pull_time = time.time()
-        self.meta = {'last_run_id': run_id}
         schemas = map(lambda t: NyseWeeklyOptionsSchema(
             id=hruuid(),
-            group=run_id,
+            gid=gid,
             timestamp=pull_time,
             ticker=t
         ), table['ticker'])

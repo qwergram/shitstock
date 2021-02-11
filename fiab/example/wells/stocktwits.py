@@ -35,7 +35,7 @@ class StockTwitMessageWell(Well):
     last_run: Optional[datetime]
     well_data_schema: StockTwitMessage
 
-    def drill(self):
+    def drill(self, gid):
         response = requests.get(TARGET)
         if not response.ok:
             raise RuntimeError(response.json())
@@ -44,6 +44,7 @@ class StockTwitMessageWell(Well):
         messages = response.json()['messages']
         parsed = map(lambda msg: StockTwitMessage(
             id=hruuid(),
+            gid=gid,
             timestamp=load_time,
             body=msg['body'],
             create_date=msg['created_at'],
