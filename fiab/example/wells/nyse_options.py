@@ -14,7 +14,7 @@ class NyseOptionsWeekliesWell(Well):
     name = 'NYSE Weekly Options List'
     index = 'nyse.options.weekly'
     frequency = '0 0 * * *'
-    well_data_schema: NyseWeeklyOptionsSchema
+    well_data_schema = NyseWeeklyOptionsSchema
 
     def pull_table(self):
         target = 'https://www.nyse.com/products/options-nyse-american-short-term'

@@ -86,7 +86,7 @@ class YahooDailyTickerWell(Well):
 class YahooOptionsTickerWell(Well):
     index = 'yahoo.options.daily'
     frequency = '0,30 6-13 * * 1-5'  #: Every half hour during trading options trading hours
-    well_data_schema: BaseWellSchema = YahooOptionsTickerSchema
+    well_data_schema = YahooOptionsTickerSchema
 
     def __init__(self, *args, ticker: str = None, **kwargs):
         super().__init__(*args, **kwargs)

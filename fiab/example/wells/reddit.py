@@ -25,7 +25,7 @@ class RedditPostSchema(BaseWellSchema):
 class RedditPostWell(Well):
     index = 'reddit.rising'
     frequency = '0,5,10,15,20,25,30,35,40,45,50,55 * * * *'
-    well_data_schema: RedditPostSchema
+    well_data_schema = RedditPostSchema
 
     def drill(self, gid):
         response = scraper.get(TARGET.format(subreddit=self.name))

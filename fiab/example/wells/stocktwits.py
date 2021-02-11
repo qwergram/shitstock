@@ -33,7 +33,7 @@ class StockTwitMessageWell(Well):
     index = 'stocktwit.message'
     frequency = '0,5,10,15,20,25,30,35,40,45,50,55 * * * *'
     last_run: Optional[datetime]
-    well_data_schema: StockTwitMessage
+    well_data_schema = StockTwitMessage
 
     def drill(self, gid):
         response = requests.get(TARGET)
@@ -66,7 +66,7 @@ class StockTwitSymbolWell(Well):
     index = 'stocktwit.symbol'
     frequency = '0,5,10,15,20,25,30,35,40,45,50,55 * * * *'
     last_run: Optional[datetime]
-    well_data_schema: StockTwitTrendingSymbol
+    well_data_schema = StockTwitTrendingSymbol
 
     def drill(self):
         response = requests.get(TARGET)
