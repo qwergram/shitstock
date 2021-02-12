@@ -39,7 +39,6 @@ class Well:
     name: str  #: 
     index: str  #: elastic search index where this will appear
     frequency: Optional[str]  #: Cron format, leave None for one time run only
-    last_run: Optional[datetime]
     well_data_schema: BaseWellSchema
 
     def __init__(self, *args, **kwargs):
@@ -115,7 +114,6 @@ class Well:
                     json=value
                 )
 
-
     def drill(self, gid) -> List[BaseWellSchema]:
         raise NotImplementedError()
 
@@ -175,3 +173,31 @@ class Well:
 
         return urls
 
+    @property
+    def data(self) -> List[BaseWellSchema]:
+        gid = self.meta.get('gid')
+        if gid is None:
+            return []
+        
+        DEFAULT_LOGGER.debug(f'Loading {gid} run data')
+
+        index_exists = requests.get(f'{ELASTIC_SEARCH_URL}/{self.index}').ok
+        if not index_exists:
+            return []
+
+        response = requests.post(
+            f'{ELASTIC_SEARCH_URL}/{self.index}/_search/',
+            json={'query': {'match': {'gid': gid}}}
+        )
+        response_json = response.json()
+
+        if not response.ok:
+            raise RuntimeError(response_json)
+
+        hits = response_json['hits']['hits']
+        sources = list(map(lambda _: _['_source'], hits))
+        timestamps = list(map(lambda _: _.pop('@timestamp'), sources))
+        fixed = list(map(lambda p: p[0].__setitem__('timestamp', p[1]), zip(sources, timestamps)))
+        results = list(map(lambda _: self.well_data_schema(**_), sources))
+
+        return results
